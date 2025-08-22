@@ -14,7 +14,8 @@ esp32:
 logger:
 
 # API is a requirement of the dashboard import.
-api:
+api:  
+  password: !secret api_password
 
 # OTA is required for Over-the-Air updating
 ota:
@@ -22,7 +23,11 @@ ota:
 
 wifi:
   # Set up a wifi access point using the device name above
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   ap:
+    ssid: "motor_control_hotspot"
+    password: !secret wifi_ap_password
 
 # In combination with the `ap` this allows the user
 # to provision wifi credentials to the device.
@@ -40,34 +45,29 @@ text_sensor:
     name: "Sensor ESPHome Version"
 
 output:
-  - platform: esp8266_pwm
+  - platform: gpio
     id: motor_forward_pin
     pin: GPIO5
-  - platform: esp8266_pwm
+  - platform: gpio
     id: motor_reverse_pin
     pin: GPIO4
-
-fan:
-  - platform: hbridge
-    id: my_fan
-    name: "Living Room Fan"
-    pin_a: motor_forward_pin
-    pin_b: motor_reverse_pin
-    enable_pin: motor_enable
-    decay_mode: slow
+  - platform: gpio
+    id: motor_enable_pin
+    pin: GPIO12
 
 cover:
   - platform: time_based
     name: "door cover"
 
     open_action:
-      - switch.turn_on: open_cover_switch
+      - switch.turn_on: motor_forward_pin
+      - switch.turn_on: motor_enable_pin
     open_duration: 2.1min
 
     close_action:
-      - switch.turn_on: close_cover_switch
+      - switch.turn_on: motor_reverse_pin
+      - switch.turn_on: motor_enable_pin
     close_duration: 2min
 
     stop_action:
-      - switch.turn_off: open_cover_switch
-      - switch.turn_off: close_cover_switch
+      - switch.turn_off: motor_enable_pin
