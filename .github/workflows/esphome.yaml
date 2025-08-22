@@ -1,0 +1,14 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths: 
+      - '**/project.yaml'
+
+jobs:
+  build:
+    uses: esphome/workflows/.github/workflows/build.yml@main
+    with:
+      files:project.yaml
