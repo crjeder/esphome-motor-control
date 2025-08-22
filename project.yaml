@@ -67,14 +67,14 @@ switch:
       sn74hc595: sn74hc595_hub
       # Use pin number 7 (M4B)
       number: 7
-      #inverted: false
+      inverted: false
   - platform: gpio
     id: motor4_enable
     pin: GPIO27
       
 cover:
   - platform: time_based
-    name: "door cover"
+    id: door_cover
 
     open_action:
       - switch.turn_on: motor4_forward
@@ -90,3 +90,39 @@ cover:
 
     stop_action:
       - switch.turn_off: motor4_enable
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    servers:
+     - 0.pool.ntp.org
+     - 1.pool.ntp.org
+     - 2.pool.ntp.org
+    on_time:
+      - seconds: 0
+        minutes: 0
+        hours: 8  
+        then:
+          - cover.open: door_cover
+
+      - seconds: 0
+        minutes: 0
+        hours: 20
+        then:
+        - cover.close: door_cover
+
+sun:
+  latitude: 48.09009° 
+  longitude: 11.96109°
+  on_sunrise:
+    - elevation: 5°
+      then:
+        - logger.log: Good morning! 
+  on_sunset:
+    - elevation: 5°
+      then:
+        - logger.log: Good evening! 
+    - elevation: 0°
+      then:
+        - logger.log: Goot night!
