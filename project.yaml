@@ -6,7 +6,7 @@ esphome:
   name_add_mac_suffix: true
 
 esp32:
-  board: esp32dev
+  board: az-delivery-devkit-v4
   framework:
     type: esp-idf
 
@@ -44,30 +44,49 @@ text_sensor:
   - platform: version
     name: "Sensor ESPHome Version"
 
-output:
-  - platform: gpio
-    id: motor_forward_pin
-    pin: GPIO5
-  - platform: gpio
-    id: motor_reverse_pin
-    pin: GPIO4
-  - platform: gpio
-    id: motor_enable_pin
-    pin: GPIO12
+# sn74hc595 is a shift register that allows you to control multiple motor outputs
+sn74hc595:
+  - id: sn74hc595_hub
+    data_pin: GPIO13
+    clock_pin: GPIO17
+    latch_pin: GPIO19
+    oe_pin: GPIO14
 
+# Individual outputs
+switch:
+  - platform: gpio
+    id: motor4_forward
+    pin:
+      sn74hc595: sn74hc595_hub
+      # Use pin number 5 (M4A)
+      number: 5
+      inverted: false
+  - platform: gpio
+    id: motor4_reverse
+    pin:
+      sn74hc595: sn74hc595_hub
+      # Use pin number 7 (M4B)
+      number: 7
+      #inverted: false
+  - platform: gpio
+    id: motor4_enable
+    pin: GPIO27
+      
 cover:
   - platform: time_based
     name: "door cover"
 
     open_action:
-      - switch.turn_on: motor_forward_pin
-      - switch.turn_on: motor_enable_pin
+      - switch.turn_on: motor4_forward
+      - switch.turn_off: motor4_reverse
+      - switch.turn_on: motor4_enable
     open_duration: 2.1min
 
     close_action:
-      - switch.turn_on: motor_reverse_pin
-      - switch.turn_on: motor_enable_pin
+      - switch.turn_off: motor4_forward
+      - switch.turn_on: motor4_reverse
+      - switch.turn_on: motor4_enable
     close_duration: 2min
 
     stop_action:
-      - switch.turn_off: motor_enable_pin
+      - switch.turn_off: motor4_enable
