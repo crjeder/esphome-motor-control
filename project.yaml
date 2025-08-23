@@ -47,12 +47,11 @@ text_sensor:
 # sn74hc595 is a shift register that allows you to control multiple motor outputs
 sn74hc595:
   - id: sn74hc595_hub
-    data_pin: GPIO13
+    data_pin: GPIO12
     clock_pin: GPIO17
     latch_pin: GPIO19
     oe_pin: GPIO14
 
-# Individual outputs
 switch:
   - platform: gpio
     id: motor4_forward
@@ -75,21 +74,34 @@ switch:
 cover:
   - platform: time_based
     id: door_cover
+    device_class: garage
 
     open_action:
       - switch.turn_on: motor4_forward
       - switch.turn_off: motor4_reverse
       - switch.turn_on: motor4_enable
-    open_duration: 2.1min
+    open_duration: 31sec
 
     close_action:
       - switch.turn_off: motor4_forward
       - switch.turn_on: motor4_reverse
       - switch.turn_on: motor4_enable
-    close_duration: 2min
+    close_duration: 30sec
 
     stop_action:
       - switch.turn_off: motor4_enable
+
+button:
+  - platform: template
+    id: door_cover_open
+    name: "Door Cover Open"
+    on_press: 
+      - cover.open: door_cover
+  - platform: template
+    id: door_cover_close
+    name: "Door Cover Close"
+    on_press: 
+      - cover.close: door_cover
 
 time:
   - platform: sntp
