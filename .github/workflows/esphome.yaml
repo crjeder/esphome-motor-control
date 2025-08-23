@@ -9,6 +9,6 @@ on:
 
 jobs:
   build:
-    uses: esphome/workflows/.github/workflows/build.yml@main
+    uses: esphome/build-action@v6
     with:
-      files:project.yaml
+      yaml-file: project.yaml
