@@ -103,6 +103,18 @@ button:
     on_press: 
       - cover.close: door_cover
 
+binary_sensor:
+  - platform: gpio
+    pin: GPIO39
+    name: "Door Cover Open Button"
+    id: open_button
+    device_class: opening
+  - platform: gpio
+    pin: GPIO36
+    name: "Door Cover Close Button"
+    id: close_button
+    device_class: opening
+
 time:
   - platform: sntp
     id: sntp_time
