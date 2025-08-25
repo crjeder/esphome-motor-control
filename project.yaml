@@ -117,14 +117,14 @@ binary_sensor:
     id: close_button
     device_class: opening
 
-# Einklemmschutz: Wenn die Tür schließt und der Einklemm-Schalter gedrückt wird, soll 
-# - die Tür sofort stoppen
-# - die Tür wieder öffnen
-# - eine Log-Meldung ausgegeben werden
-# - die Tür nach einer Minute wieder schließen
+## Obstacle protection: If the door is closing and the obstacle switch is pressed, then
+# - the door should stop immediately
+# - the door should reopen
+# - a log message should be output
+# - the door should close again after one minute
   - platform: gpio
     pin: GPIO34
-    name: "Door Obstacle Protection"
+  name: "Door Obstacle Protection"
     id: door_obstacle_protection
     on_press:
       then:
@@ -146,7 +146,7 @@ binary_sensor:
 time:
   - platform: sntp
     id: sntp_time
-    timezone: Europe/Berlin
+  timezone: Europe/Berlin
     servers:
      - 0.pool.ntp.org
      - 1.pool.ntp.org
@@ -170,11 +170,11 @@ sun:
   on_sunrise:
     - elevation: 5°
       then:
-        - logger.log: Good morning! 
+  - logger.log: Good morning! 
   on_sunset:
     - elevation: 5°
       then:
-        - logger.log: Good evening! 
+  - logger.log: Good evening! 
     - elevation: 0°
       then:
-        - logger.log: Goot night!
+  - logger.log: Good night!
