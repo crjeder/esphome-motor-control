@@ -70,7 +70,7 @@ switch:
   - platform: gpio
     id: motor4_enable
     pin: GPIO27
-      
+
 cover:
   - platform: time_based
     id: door_cover
@@ -90,6 +90,8 @@ cover:
 
     stop_action:
       - switch.turn_off: motor4_enable
+      - switch.turn_off: motor4_forward
+      - switch.turn_off: motor4_reverse
 
 button:
   - platform: template
@@ -114,6 +116,32 @@ binary_sensor:
     name: "Door Cover Close Button"
     id: close_button
     device_class: opening
+
+# Einklemmschutz: Wenn die Tür schließt und der Einklemm-Schalter gedrückt wird, soll 
+# - die Tür sofort stoppen
+# - die Tür wieder öffnen
+# - eine Log-Meldung ausgegeben werden
+# - die Tür nach einer Minute wieder schließen
+  - platform: gpio
+    pin: GPIO34
+    name: "Door Obstacle Protection"
+    id: door_obstacle_protection
+    on_press:
+      then:
+        - lambda: |-
+            if ((id(door_cover).current_operation == CoverOperation::COVER_OPERATION_CLOSING) &&
+               (id(door_cover).position > 0.1)) {
+              // If the cover is closing, stop it and reopen
+              auto call = id(door_cover).make_call();
+              call.set_command_stop();
+              call.perform();
+              call.set_command_open();
+              call.perform();
+            }
+        - logger.log: "Obstacle detected! Door stopped and reopened."
+        - delay: 60s
+        - cover.close: door_cover
+        
 
 time:
   - platform: sntp
