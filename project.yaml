@@ -124,7 +124,7 @@ binary_sensor:
 # - the door should close again after one minute
   - platform: gpio
     pin: GPIO34
-  name: "Door Obstacle Protection"
+    name: "Door Obstacle Protection"
     id: door_obstacle_protection
     on_press:
       then:
@@ -146,7 +146,7 @@ binary_sensor:
 time:
   - platform: sntp
     id: sntp_time
-  timezone: Europe/Berlin
+    timezone: Europe/Berlin
     servers:
      - 0.pool.ntp.org
      - 1.pool.ntp.org
@@ -170,11 +170,11 @@ sun:
   on_sunrise:
     - elevation: 5°
       then:
-  - logger.log: Good morning! 
+      - logger.log: Good morning! 
   on_sunset:
     - elevation: 5°
       then:
-  - logger.log: Good evening! 
+      - logger.log: Good evening! 
     - elevation: 0°
       then:
-  - logger.log: Good night!
+      - logger.log: Good night!
